@@ -3,54 +3,27 @@
 <head>
   <meta charset="utf-8">
   <title>アプリを起動しています...</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      padding: 2em;
-      text-align: center;
-    }
-    #fallback {
-      display: none;
-      margin-top: 2em;
-    }
-  </style>
   <script>
-    const isAndroid = /Android/i.test(navigator.userAgent);
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     const appScheme = 'reloapp://';
 
     window.onload = function () {
-      const now = Date.now();
-
-      // iOSはiframe、Androidは直接ジャンプ
-      if (isIOS) {
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        iframe.src = appScheme;
-        document.body.appendChild(iframe);
-      } else if (isAndroid) {
-        window.location.href = appScheme;
-      }
-
-      // 一定時間後にアプリが開かれていないと判断 → fallback表示
+      const now = new Date().getTime();
       setTimeout(function () {
-        const elapsed = Date.now() - now;
+        const elapsed = new Date().getTime() - now;
         if (elapsed < 1500) {
-          document.getElementById('fallback').style.display = 'block';
+          window.location.href = isIOS ? iosStoreURL : androidStoreURL;
         }
       }, 1000);
+      window.location.href = appScheme;
     };
   </script>
 </head>
 <body>
-  <p>アプリを起動しています...</p>
-  <div id="fallback">
-    <p>アプリが起動しない場合は、<br>以下からアプリをダウンロードしてください。</p>
+  <p>アプリが起動しない場合は、<br>以下からアプリをダウンロードしてください。</p>
     <p>
       <a href="https://apps.apple.com/jp/app/relo-club/id988722086" target="_blank">App Store（iOS）</a><br>
       <a href="https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja" target="_blank">Google Play（Android）</a>
     </p>
-  </div>
 </body>
 </html>
