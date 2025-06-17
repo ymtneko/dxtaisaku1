@@ -8,18 +8,31 @@
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     const appScheme = 'reloapp://';
-    const iosStoreURL = 'https://apps.apple.com/jp/app/relo-club/id988722086'; // iOSのApp Store URL
-    const androidStoreURL = 'https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja'; // Google PlayのURL
+    const iosStoreURL = 'https://apps.apple.com/jp/app/relo-club/id988722086';
+    const androidStoreURL = 'https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja';
 
     window.onload = function () {
-      const now = new Date().getTime();
+      const now = Date.now();
+
+      // iOSは iframe 経由でアプリ起動を試みる
+      if (isIOS) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        iframe.src = appScheme;
+        document.body.appendChild(iframe);
+      } else {
+        // Androidは直接ジャンプ
+        window.location.href = appScheme;
+      }
+
+      // 遅延後にアプリが開かなかった場合のみストアへ
       setTimeout(function () {
-        const elapsed = new Date().getTime() - now;
+        const elapsed = Date.now() - now;
+        // ユーザーが戻ってきた（つまりアプリが開かなかった）場合のみ遷移
         if (elapsed < 1500) {
           window.location.href = isIOS ? iosStoreURL : androidStoreURL;
         }
       }, 1000);
-      window.location.href = appScheme;
     };
   </script>
 </head>
