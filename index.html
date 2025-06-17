@@ -11,28 +11,34 @@
     const iosStoreURL = 'https://apps.apple.com/jp/app/relo-club/id988722086';
     const androidStoreURL = 'https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja';
 
-    window.onload = function () {
-      const now = Date.now();
+    let willRedirect = true;
 
-      // iOSは iframe 経由でアプリ起動を試みる
+    // ユーザーがページを離れた（アプリに遷移した）とき
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        willRedirect = false;
+      }
+    });
+
+    window.onload = function () {
+      const timeout = 1500;
+
       if (isIOS) {
+        // iframeでスキームを呼び出し
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = appScheme;
         document.body.appendChild(iframe);
-      } else {
-        // Androidは直接ジャンプ
+      } else if (isAndroid) {
         window.location.href = appScheme;
       }
 
-      // 遅延後にアプリが開かなかった場合のみストアへ
+      // アプリが開けなかった場合だけストアに飛ばす
       setTimeout(function () {
-        const elapsed = Date.now() - now;
-        // ユーザーが戻ってきた（つまりアプリが開かなかった）場合のみ遷移
-        if (elapsed < 1500) {
+        if (willRedirect) {
           window.location.href = isIOS ? iosStoreURL : androidStoreURL;
         }
-      }, 1000);
+      }, timeout);
     };
   </script>
 </head>
