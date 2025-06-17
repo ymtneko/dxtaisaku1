@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8">
   <title>アプリを起動しています...</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2em;
+      text-align: center;
+    }
+    #fallback {
+      display: none;
+      margin-top: 2em;
+    }
+  </style>
   <script>
     const isAndroid = /Android/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
     const appScheme = 'reloapp://';
-    const iosStoreURL = 'https://apps.apple.com/jp/app/relo-club/id988722086';
-    const androidStoreURL = 'https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja';
-
-    let willRedirect = true;
-
-    // ユーザーがページを離れた（アプリに遷移した）とき
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        willRedirect = false;
-      }
-    });
 
     window.onload = function () {
-      const timeout = 1500;
+      const now = Date.now();
 
+      // iOSはiframe、Androidは直接ジャンプ
       if (isIOS) {
-        // iframeでスキームを呼び出し
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = appScheme;
@@ -33,16 +33,24 @@
         window.location.href = appScheme;
       }
 
-      // アプリが開けなかった場合だけストアに飛ばす
+      // 一定時間後にアプリが開かれていないと判断 → fallback表示
       setTimeout(function () {
-        if (willRedirect) {
-          window.location.href = isIOS ? iosStoreURL : androidStoreURL;
+        const elapsed = Date.now() - now;
+        if (elapsed < 1500) {
+          document.getElementById('fallback').style.display = 'block';
         }
-      }, timeout);
+      }, 1000);
     };
   </script>
 </head>
 <body>
-  <p>アプリを起動しています... 起動しない場合はアプリをダウンロードしてください。</p>
+  <p>アプリを起動しています...</p>
+  <div id="fallback">
+    <p>アプリが起動しない場合は、<br>以下からアプリをダウンロードしてください。</p>
+    <p>
+      <a href="https://apps.apple.com/jp/app/relo-club/id988722086" target="_blank">App Store（iOS）</a><br>
+      <a href="https://play.google.com/store/apps/details?id=net.fukuri.memberapp.memberapp&hl=ja" target="_blank">Google Play（Android）</a>
+    </p>
+  </div>
 </body>
 </html>
